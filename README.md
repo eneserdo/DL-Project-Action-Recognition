@@ -2,6 +2,22 @@
 
 We will compare two separate methods for action recognition on still images. The first method will be using pre-trained vision models and the second method will be using graph neural networks. 
 
+## Directory Structure
+
+```
+DL-Project-Action-Recognition/
+├── README.md
+├── graph_module        # Module for graph-based action recognition  
+│   └── ...
+├── image_module        # Module for image-based action recognition  
+│   └── ...
+├── run_graph.py        # main code for graph-based action recognition
+├── run_image.py        # main code for graph-based action recognition
+└── scripts             # Tools for data preparation
+    └── ...
+```
+
+
 ## Environment
 
 You can use following codes to create the required environments:
