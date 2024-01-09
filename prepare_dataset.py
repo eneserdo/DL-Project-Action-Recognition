@@ -1,17 +1,21 @@
 # Very simple and custom script to download and prepare the dataset. 
 # It also splits the dataset into training, validation and test sets.
 
-import gdown, zipfile, os, glob, shutil, random
+import gdown, zipfile, os, glob, shutil, random, re
 
 # For reproducibility of the splits
 random.seed(42)
 
-# Source https://drive.google.com/file/d/16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa/view?usp=drive_link
-gdown.download(id="16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa", output="data.zip", quiet=False)
+print("Preparing dataset...")
 
-with zipfile.ZipFile("data.zip", 'r') as f:
+# Source https://drive.google.com/file/d/16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa/view?usp=drive_link
+# Occasionaly, the download fails. In that case, just re-try.
+gdown.download(id="16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa", output="temp_data.zip", quiet=False)
+
+with zipfile.ZipFile("temp_data.zip", 'r') as f:
     f.extractall(".")
 
+os.remove("temp_data.zip")
 print("Dataset downloaded and extracted")
 
 # First step: rename the folders and move the images
@@ -23,7 +27,8 @@ for video_path in glob.glob(f"{source_ds}/*"):
     video_name=video_path.split("/")[-1]
     
     action_name_id=video_name.split("_")[0]
-    action_name=action_name_id[:-1]
+    # action_name=action_name_id[:-1]
+    action_name=re.sub(r'[0-9]', '', action_name_id)
 
     os.rename(video_path, os.path.join(source_ds, action_name_id))
 
@@ -54,40 +59,51 @@ for video_path in glob.glob(f"{source_ds}/*"):
     os.rmdir(video_path)
 
 
+# Resize the images
+import PIL
+from PIL import Image
 
-# Second step: split the dataset
-split_ratio=[0.7, 0.15, 0.15]
+# for action in glob.glob(f"{source_ds}/*"):
+#     action_name=action.split("/")[-1]
+#     for img in glob.glob(f"{action}/*"):
+#         im = Image.open(img)
+#         im_resized = im.resize((224, 224), PIL.Image.ANTIALIAS)
+#         im_resized.save(img)
 
-for action in glob.glob(f"{source_ds}/*"):
-    print(".", end="", flush=True)
-    action_name=action.split("/")[-1]
+
+# # Second step: split the dataset
+# split_ratio=[0.7, 0.15, 0.15]
+
+# for action in glob.glob(f"{source_ds}/*"):
+#     action_name=action.split("/")[-1]
     
-    train_path=os.path.join(source_ds, "train", action_name)
-    val_path=os.path.join(source_ds, "val", action_name)
-    test_path=os.path.join(source_ds, "test", action_name)
+#     train_path=os.path.join(source_ds, "train", action_name)
+#     val_path=os.path.join(source_ds, "val", action_name)
+#     test_path=os.path.join(source_ds, "test", action_name)
 
-    os.makedirs(train_path, exist_ok=True)
-    os.makedirs(val_path, exist_ok=True)
-    os.makedirs(test_path, exist_ok=True)
+#     os.makedirs(train_path, exist_ok=True)
+#     os.makedirs(val_path, exist_ok=True)
+#     os.makedirs(test_path, exist_ok=True)
 
-    imgs=glob.glob(f"{action}/*")
-    random.shuffle(imgs)
+#     imgs=glob.glob(f"{action}/*")
+#     random.shuffle(imgs)
 
-    train_split=int(len(imgs)*split_ratio[0])
-    val_split=int(len(imgs)*split_ratio[1])
-    test_split=int(len(imgs)*split_ratio[2])
+#     train_split=int(len(imgs)*split_ratio[0])
+#     val_split=int(len(imgs)*split_ratio[1])
+#     test_split=int(len(imgs)*split_ratio[2])
 
-    for img in imgs[:train_split]:
-        shutil.move(img, train_path)
+#     for img in imgs[:train_split]:
+#         shutil.move(img, train_path)
 
-    for img in imgs[train_split:train_split+val_split]:
-        shutil.move(img, val_path)
+#     for img in imgs[train_split:train_split+val_split]:
+#         shutil.move(img, val_path)
 
-    for img in imgs[train_split+val_split:]:
-        shutil.move(img, test_path)
+#     for img in imgs[train_split+val_split:]:
+#         shutil.move(img, test_path)
 
-    shutil.rmtree(action)
+#     shutil.rmtree(action)
+# print("Dataset splitted")
 
 
-print("Dataset splitted")
+
 print("Done!")

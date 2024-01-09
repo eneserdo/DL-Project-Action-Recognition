@@ -12,26 +12,34 @@ DL-Project-Action-Recognition/
 ├── README.md
 ├── dl_action_dataset   # Dataset for action recognition
 ├── prepare_dataset.py  # Script for preparing the dataset
-├── ...
-├── main.py        # main code for graph-based action recognition
-└── scripts             # Tools for data preparation
+├── inspect.ipynb       # Notebook for inspecting the model
+├── utils.py            # Utility functions
+├── main.py             # main code for graph-based action recognition
+└── scripts             # Tools for data collection
     └── ...
 ```
 
 
 ## Environment
 
-You can use following codes to create the required environments:
+You can use following commands to create the required environments:
 
 ```
-conda create -n myenv python=3.8
+conda create -n myenv python=3.9
 
-conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 cudatoolkit=11.6 -c pytorch -c conda-forge 
+conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=11.8 -c pytorch -c nvidia
 
-pip install transformers[torch] datasets # huggingface
+pip install timm # huggingface's model hub
 
-pip install natsort matplotlib gdown
+pip install gdown # for downloading the dataset
 
+pip install grad-cam # to inspect the model
+
+pip install ipykernel
+
+pip install torchmetrics
+
+pip install wandb
 ```
 
 ## Dataset
@@ -52,6 +60,8 @@ However, it you should call the `prepare_dataset.py` script to download and prep
 
 ## Resources I used:
 
-- https://huggingface.co # in general
-- https://huggingface.co/blog/fine-tune-vit
-- https://github.com/huggingface/notebooks/blob/main/examples/image_classification.ipynb
+- https://huggingface.co/docs/timm/index
+- https://github.com/jacobgil/pytorch-grad-cam/blob/master/tutorials/vision_transformers.md
+- https://jacobgil.github.io/pytorch-gradcam-book/CAM%20Metrics%20And%20Tuning%20Tutorial.html
+
+
