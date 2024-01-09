@@ -1,9 +1,14 @@
-# Very simple and custom script to download and prepare the dataset
+# Very simple and custom script to download and prepare the dataset. 
+# It also splits the dataset into training, validation and test sets.
 
 import gdown, zipfile, os, glob, shutil, random
 
+# For reproducibility of the splits
+random.seed(42)
+
 # Source https://drive.google.com/file/d/16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa/view?usp=drive_link
 gdown.download(id="16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa", output="data.zip", quiet=False)
+
 with zipfile.ZipFile("data.zip", 'r') as f:
     f.extractall(".")
 
@@ -28,6 +33,7 @@ for video_path in glob.glob(f"{source_ds}/*"):
         shutil.move(img, video_path)
     
 
+    # Remove the unnecessary folders and files
     shutil.rmtree(os.path.join(video_path, "rgb"))
     shutil.rmtree(os.path.join(video_path, "depth"))
     os.remove(os.path.join(video_path, "rgb.txt"))
@@ -83,7 +89,5 @@ for action in glob.glob(f"{source_ds}/*"):
     shutil.rmtree(action)
 
 
-
 print("Dataset splitted")
-
 print("Done!")
