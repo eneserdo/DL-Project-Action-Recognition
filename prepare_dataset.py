@@ -7,15 +7,20 @@ import gdown, zipfile, os, glob, shutil, random, re
 random.seed(42)
 
 print("Preparing dataset...")
-
 # Source https://drive.google.com/file/d/16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa/view?usp=drive_link
 # Occasionaly, the download fails. In that case, just re-try.
-gdown.download(id="16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa", output="temp_data.zip", quiet=False)
+# file_id="16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa"
+# gdown.download(id=f"https://drive.google.com/uc?export=download&confirm=pbef&id={file_id}")
+# gdown.download(id="16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa", use_cookies=False)
 
-with zipfile.ZipFile("temp_data.zip", 'r') as f:
+# If this fails, try in the terminal:
+# gdown --no-cookie 16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa
+
+
+with zipfile.ZipFile("dl_action_dataset.zip", 'r') as f:
     f.extractall(".")
 
-os.remove("temp_data.zip")
+# os.remove("temp_data.zip")
 print("Dataset downloaded and extracted")
 
 # First step: rename the folders and move the images
@@ -60,15 +65,20 @@ for video_path in glob.glob(f"{source_ds}/*"):
 
 
 # Resize the images
-import PIL
 from PIL import Image
 
-# for action in glob.glob(f"{source_ds}/*"):
-#     action_name=action.split("/")[-1]
-#     for img in glob.glob(f"{action}/*"):
-#         im = Image.open(img)
-#         im_resized = im.resize((224, 224), PIL.Image.ANTIALIAS)
-#         im_resized.save(img)
+# Original size: 360x640
+# Target size: 336x336 (224*1.5=336)
+
+for action in glob.glob(f"{source_ds}/*"):
+    action_name=action.split("/")[-1]
+    for img in glob.glob(f"{action}/*"):
+        im = Image.open(img)
+        # crop the image
+        im = im.crop((152, 0, 152+336, 336)) # (left, top, right, bottom)
+        # save it back
+        im.save(img)
+
 
 
 # # Second step: split the dataset

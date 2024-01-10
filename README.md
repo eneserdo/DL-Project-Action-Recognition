@@ -35,11 +35,7 @@ pip install gdown # for downloading the dataset
 
 pip install grad-cam # to inspect the model
 
-pip install ipykernel
-
-pip install torchmetrics
-
-pip install wandb
+pip install ipykernel seaborn torchmetrics wandb
 ```
 
 ## Dataset
@@ -48,7 +44,12 @@ We curated a video dataset of 4 actions with 5 repetitions each. Since our model
 
 The dataset can be found [here](https://drive.google.com/file/d/16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa/view?usp=drive_link).
 
-However, it you should call the `prepare_dataset.py` script to download and prepare the dataset.
+However, you can simply run the following command to download the dataset:
+
+```gdown --no-cookie 16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa```
+
+Afterwards, run `python prepare_dataset.py` script to prepare the dataset for training.
+
 
 ## Fine-tuning ViT Models 
 ...

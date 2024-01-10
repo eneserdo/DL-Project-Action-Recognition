@@ -164,3 +164,5 @@ dl_action_dataset/*
 *.zip
 vit-ar/*
 .vscode/*
+wandb/*
+*.pth
