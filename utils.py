@@ -9,9 +9,9 @@ def get_args():
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("-n", "--name", type=str, required=True)
 
-    parser.add_argument("-lrh", "--lr-head", type=float, default=0.001)
+    parser.add_argument("-lrh", "--lr-head", type=float, default=0.0001)
     parser.add_argument("-lrb", "--lr-base", type=float, default=0.0)
-    parser.add_argument("-wd", "--weight-decay", type=float, default=0.0)
+    parser.add_argument("-wd", "--weight-decay", type=float, default=1e-5)
 
     # parser.add_argument("--seed", type=int, default=42)
     # parser.add_argument("--log_interval", type=int, default=10)

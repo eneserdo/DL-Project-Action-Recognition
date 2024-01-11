@@ -115,5 +115,14 @@ for action in glob.glob(f"{source_ds}/*"):
 # print("Dataset splitted")
 
 
+# Analyze the dataset
+
+from cleanvision import Imagelab
+
+# Specify path to folder containing the image files in your dataset
+imagelab = Imagelab(data_path="dl_action_dataset/")
+imagelab.find_issues()
+imagelab.report()
+
 
 print("Done!")
