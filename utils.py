@@ -1,4 +1,5 @@
 import argparse
+from typing import Any
 import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -7,6 +8,8 @@ from torchvision import transforms as pth_transforms
 from torchvision import datasets
 from torchvision.utils import make_grid
 from collections import Counter
+from torchmetrics.classification import MulticlassConfusionMatrix, MulticlassAccuracy, MulticlassF1Score
+
 
 def get_args():
     parser = argparse.ArgumentParser(description="Action Recognition")
@@ -17,7 +20,7 @@ def get_args():
     
     # Training parameters
     parser.add_argument("--batch-size", type=int, default=64)
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=15)
 
     # Optimizer parameters
     parser.add_argument("-lrh", "--lr-head", type=float, default=0.0001)
@@ -130,7 +133,8 @@ def get_dataloaders(args):
 
     print(f"Train size: {len(train_dataset)}, Val size: {len(val_dataset)}, Test size: {len(test_dataset)}")
 
-    od=dict(Counter(train_dataset.targets))
+    # Compute class distribution (using only the training set)
+    od=dict(Counter([my_dataset.targets[idx] for idx in train_dataset.indices]))
     distribution = [od[k] for k in range(len(od))]
     distribution = torch.tensor(distribution)
     
@@ -167,3 +171,38 @@ def visualize_dataset(ds: torch.utils.data.Dataset, denormalize, N=6, fsize=15):
     plt.imshow(grid.permute(1, 2, 0))
     plt.axis('off')
     plt.show()
+
+
+# To encapsulate the metrics 
+class Metrics:
+    def __init__(self, num_classes) -> None:
+        self.cf=MulticlassConfusionMatrix(num_classes=num_classes, normalize="true")
+        self.acc=MulticlassAccuracy(num_classes=num_classes)
+        self.f1=MulticlassF1Score(num_classes=num_classes)
+
+    def update(self, preds, targets) -> Any:
+        self.cf.update(preds, targets)
+        self.acc.update(preds, targets)
+        self.f1.update(preds, targets)
+        
+    def compute(self) -> dict:
+        return {
+            "cm": self.cf.compute(),
+            "acc": self.acc.compute(),
+            "f1": self.f1.compute(),
+        }
+
+    def reset(self) -> None:
+        self.cf.reset()
+        self.acc.reset()
+        self.f1.reset()
+
+
+def logdict2str(d):
+    logs=""
+    for k, v in d.items():
+        if k=="cm":
+            continue
+        logs+=f"{k}: {v:.4f} "
+    
+    return logs

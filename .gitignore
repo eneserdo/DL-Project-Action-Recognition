@@ -166,3 +166,4 @@ vit-ar/*
 .vscode/*
 wandb/*
 *.pth
+Stanford40/*
