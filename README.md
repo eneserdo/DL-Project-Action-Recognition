@@ -40,15 +40,23 @@ pip install ipykernel seaborn torchmetrics wandb
 
 ## Dataset
 
+### Our Dataset
 We curated a video dataset of 4 actions with 5 repetitions each. Since our model is image-based, we extracted the frames, so in total we have 3364 images. 
 
 The dataset can be found [here](https://drive.google.com/file/d/16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa/view?usp=drive_link).
 
-However, you can simply run the following command to download the dataset:
+However, you can simply run the following script to download and prepare the dataset:
 
-```gdown --no-cookie 16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa```
+```python prepare_dataset.py --dataset our```
 
-Afterwards, run `python prepare_dataset.py` script to prepare the dataset for training.
+
+### Stanford40 Dataset
+
+> The Stanford 40 Action Dataset contains images of humans performing 40 actions. In each image, we provide a bounding box of the person who is performing the action indicated by the filename of the image. There are 9532 images in total with 180-300 images per action class. [1]
+
+To download and prepare the dataset for training:
+
+```python prepare_dataset.py --dataset Stanford40```
 
 
 ## Fine-tuning ViT Models 
@@ -59,10 +67,12 @@ Afterwards, run `python prepare_dataset.py` script to prepare the dataset for tr
 ...
 ...
 
-## Resources I used:
+## REFERENCES:
+
+[1] http://vision.stanford.edu/Datasets/40actions.html 
+
+## Other Resources I used:
 
 - https://huggingface.co/docs/timm/index
 - https://github.com/jacobgil/pytorch-grad-cam/blob/master/tutorials/vision_transformers.md
 - https://jacobgil.github.io/pytorch-gradcam-book/CAM%20Metrics%20And%20Tuning%20Tutorial.html
-
-
