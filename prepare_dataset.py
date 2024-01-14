@@ -3,7 +3,7 @@
 
 from argparse import ArgumentParser
 import gdown, zipfile, os, glob, shutil, random, re
-
+from PIL import Image
 # For reproducibility of the splits
 random.seed(42)
 
@@ -20,6 +20,9 @@ def prepare_our_dataset():
     # Alternative: use the gdown command line tool
     os.system("gdown --no-cookie 16pMYcodc5oshaTIcQYcHrK2VDG7vUuLa")
 
+    # Alternative: manually download the file from the link above and place it in the same folder as this script
+    if not os.path.exists("dl_action_dataset.zip"):
+        raise FileNotFoundError("Dataset zip file not found. Please download it manually from the link above.")
 
     with zipfile.ZipFile("dl_action_dataset.zip", 'r') as f:
         f.extractall(".")
@@ -66,8 +69,10 @@ def prepare_our_dataset():
         os.rmdir(video_path)
 
 
+
+    print("Resizing the images...")
     # Resize the images
-    from PIL import Image
+    
 
     # Original size: 360x640
     # Target size: 336x336 (224*1.5=336)
