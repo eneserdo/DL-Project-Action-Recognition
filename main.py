@@ -101,7 +101,8 @@ def main(args):
         # two learning rates for head and the rest of the model (I call it base)
         optimizer = torch.optim.Adam(
             [
-                {"params": model.head.parameters(), "lr": args.lr_head},
+                {"params": model.parameters()},  
+                {"params": model.head.parameters(), "lr": args.lr_head},  
             ],
             lr=args.lr_base,
         )
