@@ -10,13 +10,13 @@ Unfortunately, my teammate left the project. So, I will just apply various fine-
 ```
 DL-Project-Action-Recognition/
 ├── README.md
-├── dl_action_dataset   # Dataset for action recognition
 ├── prepare_dataset.py  # Script for preparing the dataset
-├── inspect.ipynb       # Notebook for inspecting the model
+├── visualization.ipynb       # Notebook to inspect the model and dataset
 ├── utils.py            # Utility functions
-├── main.py             # main code for graph-based action recognition
+├── main.py             # main training and validation code for action recognition
 └── scripts             # Tools for data collection
     └── ...
+
 ```
 
 
@@ -29,14 +29,15 @@ conda create -n myenv python=3.9
 
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=11.8 -c pytorch -c nvidia
 
-pip install timm # huggingface's model hub
-
-pip install gdown # for downloading the dataset
-
-pip install grad-cam # to inspect the model
-
-pip install ipykernel seaborn torchmetrics wandb
+pip install timm gdown grad-cam ipykernel seaborn torchmetrics wandb
 ```
+
+Some package details:
+
+- timm: huggingface's model hub
+- gdown: for downloading the dataset
+- grad-cam: to inspect the model
+
 
 ## Dataset
 
