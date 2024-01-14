@@ -223,3 +223,27 @@ def logdict2str(d):
         logs+=f"{k}: {v:.4f}, "
     
     return logs[:-2]
+
+def get_optimizer(model, args):
+
+    # Construct optimizer
+    optimizer = torch.optim.Adam(
+        [
+            # All the other parameters
+            {"params": model.patch_embed.parameters()},
+            {"params": model.pos_drop.parameters()},
+            {"params": model.patch_drop.parameters()},
+            {"params": model.norm_pre.parameters()},
+            {"params": model.blocks.parameters()},
+            {"params": model.norm.parameters()},
+            {"params": model.fc_norm.parameters()},
+            {"params": model.head_drop.parameters()},
+
+            # The last layer
+            {"params": model.head.parameters(), "lr": args.lr_head},
+        ],
+        lr=args.lr_base,
+        weight_decay=args.weight_decay
+    )
+
+    return optimizer

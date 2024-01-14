@@ -7,7 +7,7 @@ import wandb
 import timm
 import torch
 
-from utils import freeze_all_except_head, get_training_args, get_dataloaders, logdict2str, plot_conf_mat, Metrics
+from utils import freeze_all_except_head, get_optimizer, get_training_args, get_dataloaders, logdict2str, plot_conf_mat, Metrics
 
 # Setting seeds
 torch.manual_seed(42)
@@ -99,13 +99,8 @@ def main(args):
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr_head)
     else:
         # two learning rates for head and the rest of the model (I call it base)
-        optimizer = torch.optim.Adam(
-            [
-                {"params": model.parameters()},  
-                {"params": model.head.parameters(), "lr": args.lr_head},  
-            ],
-            lr=args.lr_base,
-        )
+        # there is a redundancy here 
+        optimizer = get_optimizer(model, args)
 
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
