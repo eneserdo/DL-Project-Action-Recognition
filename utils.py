@@ -1,5 +1,6 @@
 import argparse
 from typing import Any
+import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -11,7 +12,7 @@ from collections import Counter
 from torchmetrics.classification import MulticlassConfusionMatrix, MulticlassAccuracy, MulticlassF1Score
 
 
-def get_args():
+def get_training_args():
     parser = argparse.ArgumentParser(description="Action Recognition")
 
     parser.add_argument("-n", "--name", type=str, required=True)
@@ -27,6 +28,13 @@ def get_args():
     parser.add_argument("-lrb", "--lr-base", type=float, default=0.0)
     parser.add_argument("-wd", "--weight-decay", type=float, default=1e-5)
     parser.add_argument("--weighted-loss", action="store_true", default=False)
+
+    return parser.parse_args()
+
+def get_test_args():
+    parser = argparse.ArgumentParser(description="Action Recognition")
+    parser.add_argument("-n", "--name", type=str, required=True)
+    parser.add_argument("-ds", "--dataset", type=str, required=True, choices=["our", "Stanford40"])
 
     return parser.parse_args()
 
@@ -147,30 +155,39 @@ def get_dataloaders(args):
     return train_dataloader, val_dataloader, test_dataloader, distribution, NUM_CLASSES, CLASS_NAMES
 
 
-def visualize_dataset(ds: torch.utils.data.Dataset, denormalize, N=6, fsize=15):
-    N = 6
+def visualize_dataset(ds: torch.utils.data.Dataset, denormalize, N=4, fsize=10, use_n_classes=None):
     samples = {}
+
+    
 
     # after transform
     h, w = 224, 224
 
-    NUM_CLASSES = len(ds.classes)
-    for c in range(NUM_CLASSES):
+    if use_n_classes is None:
+        # use all classes
+        selected_classes = np.arange(len(ds.classes))
+    else:
+        selected_classes = np.random.choice(len(ds.classes), use_n_classes, replace=False)
+
+    for c in selected_classes:
         print(".", end="", flush=True) # a primitive progress bar
 
+        shuffled_indices = np.random.permutation(len(ds))
+
         samples[c] = []
-        for i in range(len(ds)):
+        for i in shuffled_indices:
             if ds[i][1] == c:
                 samples[c].append(denormalize(ds[i][0]))
             if len(samples[c]) == N:
                 break
 
 
-    grid = make_grid(torch.cat([torch.stack(samples[c]) for c in range(NUM_CLASSES)]), nrow=N)
+    grid = make_grid(torch.cat([torch.stack(samples[c]) for c in selected_classes]), nrow=N)
     plt.figure(figsize=(fsize, fsize))
     plt.imshow(grid.permute(1, 2, 0))
     plt.axis('off')
     plt.show()
+    print(" ".join([ds.classes[c] for c in selected_classes]))
 
 
 # To encapsulate the metrics 
