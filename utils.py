@@ -20,7 +20,7 @@ def get_args():
     
     # Training parameters
     parser.add_argument("--batch-size", type=int, default=64)
-    parser.add_argument("--epochs", type=int, default=15)
+    parser.add_argument("--epochs", type=int, default=25)
 
     # Optimizer parameters
     parser.add_argument("-lrh", "--lr-head", type=float, default=0.0001)
@@ -203,6 +203,6 @@ def logdict2str(d):
     for k, v in d.items():
         if k=="cm":
             continue
-        logs+=f"{k}: {v:.4f} "
+        logs+=f"{k}: {v:.4f}, "
     
-    return logs
+    return logs[:-2]

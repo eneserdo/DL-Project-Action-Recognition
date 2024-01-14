@@ -104,6 +104,8 @@ def main(args):
             lr=args.lr_base,
         )
 
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+
 
     head_params = sum(p.numel() for p in model.head.parameters() if p.requires_grad)
     print(f"Total params: {total_params:_}")
@@ -121,25 +123,28 @@ def main(args):
 
     for e in range(args.epochs):
         train_logs = run_one_epoch(model, train_dataloader, 'train', critereon, optimizer, e)
-        val_metrics = run_one_epoch(model, val_dataloader, 'val', critereon, optimizer, e)
+        val_logs = run_one_epoch(model, val_dataloader, 'val', critereon, optimizer, e)
 
-        print(f'E {e+1}/{args.epochs}: '
+        print(f'E {e+1: >2}/{args.epochs}: '
               f'[Training] {logdict2str(train_logs)} '
-              f'[Val] {logdict2str(val_metrics)}')
+              f'[Val] {logdict2str(val_logs)}')
 
-        if val_metrics[comparison_metric] > best_model_score:
+        if val_logs[comparison_metric] > best_model_score:
             best_model_epoch = e
-            best_model_score = val_metrics[comparison_metric]
+            best_model_score = val_logs[comparison_metric]
             torch.save(model.state_dict(), best_model_name)
+        
+        scheduler.step()
 
 
     # Load best model and evaluate on test set
     print(f'Loading {best_model_epoch}th model')
     model.load_state_dict(torch.load(best_model_name))
 
-    test_metrics=run_one_epoch(model, test_dataloader, 'test', critereon, optimizer, 0)
+    test_logs=run_one_epoch(model, test_dataloader, 'test', critereon, optimizer, 0)
 
-    print(f'Test {comparison_metric}: {test_metrics[comparison_metric]:.4f}')
+    print(f'Test {logdict2str(val_logs)}')
+
 
     wandb.finish()
 
