@@ -2,11 +2,12 @@
 # 504211555
 
 import os
+from time import perf_counter
 import wandb
 import timm
 import torch
 
-from utils import freeze_all_except_head, get_args, get_dataloaders, logdict2str, plot_conf_mat, Metrics
+from utils import freeze_all_except_head, get_training_args, get_dataloaders, logdict2str, plot_conf_mat, Metrics
 
 # Setting seeds
 torch.manual_seed(42)
@@ -79,6 +80,7 @@ def main(args):
     wandb.define_metric("val/*", step_metric="epoch")
     wandb.define_metric("test/*", step_metric="epoch")
 
+    print(args)
 
     # Construct datasets, dataloaders
     train_dataloader, val_dataloader, test_dataloader, distribution, NUM_CLASSES, CLASS_NAMES = get_dataloaders(args)
@@ -122,12 +124,15 @@ def main(args):
     comparison_metric = "f1"
 
     for e in range(args.epochs):
+        start = perf_counter()
         train_logs = run_one_epoch(model, train_dataloader, 'train', critereon, optimizer, e)
         val_logs = run_one_epoch(model, val_dataloader, 'val', critereon, optimizer, e)
+        end = perf_counter()
 
         print(f'E {e+1: >2}/{args.epochs}: '
               f'[Training] {logdict2str(train_logs)} '
-              f'[Val] {logdict2str(val_logs)}')
+              f'[Val] {logdict2str(val_logs)} '
+              f'({end-start:.2f}s)')
 
         if val_logs[comparison_metric] > best_model_score:
             best_model_epoch = e
@@ -150,4 +155,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(get_args())
+    main(get_training_args())
